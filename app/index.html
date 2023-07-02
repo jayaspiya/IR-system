@@ -4,18 +4,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Task 1: Search Engine</title>
+    <title>IR Search Engine</title>
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/jayaspiya/jayaspiya/master/assets/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
 </head>
 
 <body>
-    <header class="flex px-24 py-4 justify-between" style="background-color: #247CBF;">
-        <img src="./assets/coventry_logo.png" alt="Coventry">
-        <h1 class="text-white text-3xl flex items-center font-bold ml-6">
-            Task 1: Vertical Search Engine
-        </h1>
-    </header>
     <div id="app">
         <div class="flex px-24 py-1 justify-between">
             <h1 class="font-semibold text-2xl">
@@ -35,11 +29,6 @@
 
         <div class="container mx-auto my-8">
             <div v-for="paper in papers" :key="paper.id" class="grid grid-cols-8 gap-4 bg-white rounded shadow p-3 my-4 hover:bg-gray-100 cursor-pointer">
-                <div class="col-span-1 flex flex-col items-center justify-center">
-                    <div class="font-bold text-xs text-center">Relevance Score</div>
-                    <div class="text-xl">{{paper.relevance_score}}%</div>
-                </div>
-
                 <div class="col-span-7 flex">
                     <div class="w-full">
                         <div class="text-xl font-bold mb-2">{{paper.title}}</div>
@@ -54,7 +43,7 @@
                         </div>
 
                         <div class="flex items-center my-0.5">
-                            <img src="./assets/calendar.png" alt="published" class="max-h-4 pr-2" /> {{paper.published_date}}
+                             {{paper.published_date}}
                         </div>
 
                         <div class="my-0.5">
@@ -62,30 +51,12 @@
                   >
                 </div>
             </div>
-                <a class="flex items-center" :href="paper.research_link" _target="blank">
-                    <svg class="h-12 w-12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                    </svg>
-                </a>
             </div>
               </div>
         </div>
         <div class="container mx-auto my-8 text-center font-semibold" >
             {{prompt}}
           </div>
-        <div class="flex justify-center">
-            <button 
-                v-if="papers.length > 0"
-                class="mb-6 block rounded px-6 pb-2 pt-2.5 uppercase leading-normal text-white"
-                style="background-color: #247CBF;"
-                v-bind:class="{ 'opacity-50': disableShowMoreButton }"
-                @click="showMore"
-                :disabled='disableShowMoreButton'
-                >
-                Show More
-            </button>
-
-        </div>
       </div>
      
     </div>
@@ -103,9 +74,6 @@
         }),
         methods: {
           searchPapers() {
-            if (this.searchTerm === "") {
-              return;
-            }
             this.prompt = "Loading"
             fetch(`http://localhost:5000/api?query=${this.searchTerm}`)
               .then((response) => response.json())
@@ -120,22 +88,6 @@
                 else{
                     this.prompt = `Displaying 0-${this.skip+10} results out of the total "${this.lastSearchTerm}" query`
                     this.disableShowMoreButton = false
-                }
-              });
-          },
-          showMore(){
-            old_skip = this.skip
-            this.skip = old_skip + 10
-            fetch(`http://localhost:5000/api?query=${this.lastSearchTerm}&skip=${this.skip}`)
-              .then((response) => response.json())
-              .then((data) => {
-                this.papers.push(...data);
-                if(data.length == 0){
-                    this.prompt = "No More Result"
-                    this.disableShowMoreButton = true
-                }
-                else{
-                    this.prompt = `Displaying 0-${this.skip+10} results out of the total "${this.lastSearchTerm}" query`
                 }
               });
           }
